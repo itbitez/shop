@@ -1,0 +1,582 @@
+{% extends "base.html" %}
+
+{% block title %}
+    Shop - {{ site_settings.site_title }}
+{% endblock %}
+
+{% block content %}
+        <!-- OffCanvas Menu End -->
+        <!-- breadcrumb-area start -->
+        <div class="breadcrumb-area">
+            <div class="container">
+                <div class="row align-items-center justify-content-center">
+                    <div class="col-12 text-center">
+                        <h2 class="breadcrumb-title">Shop</h2>
+                        <!-- breadcrumb-list start -->
+                        <ul class="breadcrumb-list">
+                            <li class="breadcrumb-item"><a href="{% url "index" %}">Home</a></li>
+                            <li class="breadcrumb-item active">Shop</li>
+                        </ul>
+                        <!-- breadcrumb-list end -->
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- breadcrumb-area end -->
+        <!-- Shop Page Start  -->
+        <div class="shop-category-area pt-100px pb-100px">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-9 order-lg-last col-md-12 order-md-first">
+                        <!-- Shop Top Area Start -->
+                        <div class="shop-top-bar d-flex">
+                            <p class="compare-product"> 
+                                <span>{{ page_obj|length }}</span> Products Found of 
+                                <span>{{ total_products }}</span>
+                            </p>
+                            
+                            
+                            <!-- Left Side End -->
+                            <div class="shop-tab nav">
+                                <button class="active" data-bs-target="#shop-grid" data-bs-toggle="tab">
+                                    <i class="fa fa-th" aria-hidden="true"></i>
+                                </button>
+                                <button data-bs-target="#shop-list" data-bs-toggle="tab">
+                                    <i class="fa fa-list" aria-hidden="true"></i>
+                                </button>
+                            </div>
+                            <!-- Right Side Start -->
+                            <div class="select-shoing-wrap d-flex align-items-center">
+                                <div class="shot-product">
+                                    <p>Sort By:</p>
+                                </div>
+                                <!-- Single Wedge End -->
+                                <div class="header-bottom-set dropdown">
+                                    <button class="dropdown-toggle header-action-btn" data-bs-toggle="dropdown">
+                                        {% if sort == 'name_asc' %}
+                                            Name, A to Z
+                                        {% elif sort == 'name_desc' %}
+                                            Name, Z to A
+                                        {% elif sort == 'price_asc' %}
+                                            Price, low to high
+                                        {% elif sort == 'price_desc' %}
+                                            Price, high to low
+                                        {% elif sort == 'newest' %}
+                                            Sort by new
+                                        {% elif sort == 'oldest' %}
+                                            Sort by old
+                                        {% else %}
+                                            Default
+                                        {% endif %}
+                                        <i class="fa fa-angle-down"></i>
+                                    </button>
+                                    <ul class="dropdown-menu dropdown-menu-right">
+                                        <li><a class="dropdown-item" href="?{% if category_id %}category={{ category_id }}&{% endif %}{% if selected_brand %}brand={{ selected_brand }}&{% endif %}{% if selected_color %}color={{ selected_color }}&{% endif %}sort=name_asc">Name, A to Z</a></li>
+                                        <li><a class="dropdown-item" href="?{% if category_id %}category={{ category_id }}&{% endif %}{% if selected_brand %}brand={{ selected_brand }}&{% endif %}{% if selected_color %}color={{ selected_color }}&{% endif %}sort=name_desc">Name, Z to A</a></li>
+                                        <li><a class="dropdown-item" href="?{% if category_id %}category={{ category_id }}&{% endif %}{% if selected_brand %}brand={{ selected_brand }}&{% endif %}{% if selected_color %}color={{ selected_color }}&{% endif %}sort=price_asc">Price, low to high</a></li>
+                                        <li><a class="dropdown-item" href="?{% if category_id %}category={{ category_id }}&{% endif %}{% if selected_brand %}brand={{ selected_brand }}&{% endif %}{% if selected_color %}color={{ selected_color }}&{% endif %}sort=price_desc">Price, high to low</a></li>
+                                        <li><a class="dropdown-item" href="?{% if category_id %}category={{ category_id }}&{% endif %}{% if selected_brand %}brand={{ selected_brand }}&{% endif %}{% if selected_color %}color={{ selected_color }}&{% endif %}sort=newest">Sort by new</a></li>
+                                        <li><a class="dropdown-item" href="?{% if category_id %}category={{ category_id }}&{% endif %}{% if selected_brand %}brand={{ selected_brand }}&{% endif %}{% if selected_color %}color={{ selected_color }}&{% endif %}sort=oldest">Sort by old</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <!-- Right Side End -->
+                        </div>
+                        <!-- Shop Top Area End -->
+                        <!-- Shop Bottom Area Start -->
+                        <div class="shop-bottom-area">
+                            <!-- Tab Content Area Start -->
+                            <div class="row">
+                                <div class="col">
+                                    <div class="tab-content">
+                                        <div class="tab-pane fade show active" id="shop-grid">
+                                            <div class="row mb-n-30px">
+                                                {% for product in page_obj %}
+                                                <div class="col-lg-4 col-md-6 col-sm-6 col-xs-6 mb-30px">
+                                                    <!-- Single Prodect -->
+                                                    <div class="product">
+                                                        <span class="badges">
+                                                        <span class="new">New</span>
+                                                        </span>
+                                                        <div class="thumb">
+                                                            <a href="{% url 'product_detail' product.slug %}" class="image">
+                                                                <img src="{{ product.image.url }}" alt="Product" />
+                                                                <img class="hover-image" src="{{product.image.url}}" alt="Product" />
+                                                            </a>
+                                                        </div>
+                                                        <div class="content">
+                                                            <span class="category" style="display: flex;">
+                                                                {% for category in product.categories.all %}
+                                                                    {{ category.name }}{% if not forloop.last %},<span style="width: 10px; display: inline-block;"></span> {% endif %}
+                                                                {% endfor %}
+                                                            </span>
+                                                            <h5 class="title"><a href="{% url 'product_detail' product.slug %}">{{ product.name }}
+                                                                </a>
+                                                            </h5>
+                                                            <span class="price">
+                                                            <span class="new">${{ product.price }}</span>
+                                                            </span>
+                                                        </div>
+                                                        <div class="actions">
+                                                            <a href="{% url 'cart_add' product.id %}" title="Add To Cart" class="action add-to-cart"><i
+                                                                class="pe-7s-shopbag"></i></a>
+                                                            
+                                                            <button class="action quickview" data-id="{{ product.id }}" title="Quick view" data-bs-toggle="modal" data-bs-target="#exampleModal"><i class="pe-7s-look"></i></button>
+
+                                                            
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                {% endfor %}
+                                            </div>
+                                        </div>
+                                        <div class="tab-pane fade mb-n-30px" id="shop-list">
+                                            {% for product in page_obj %}
+                                            <div class="shop-list-wrapper mb-30px">
+                                                <div class="row">
+                                                    <div class="col-md-5 col-lg-5 col-xl-4 mb-lm-30px">
+                                                        <div class="product">
+                                                            <div class="thumb">
+                                                                <a href="{% url 'product_detail' product.slug %}" class="image">
+                                                                    <img src="{{product.image.url}}" alt="Product" />
+                                                                    <img class="hover-image" src="{{product.image.url}}" alt="Product" />
+                                                                </a>
+                                                                <span class="badges">
+                                                                <span class="new">New</span>
+                                                                </span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-7 col-lg-7 col-xl-8">
+                                                        <div class="content-desc-wrap">
+                                                            <div class="content">
+                                                                <span class="category">
+                                                                    {% for category in product.categories.all %}
+                                                                    <a href="#">{{ category.name }}</a>{% if not forloop.last %},<span style="width: 10px; display: inline-block;"></span> {% endif %}
+                                                                {% endfor %}
+                                                                </span>
+                                                                <h5 class="title"><a href="{% url 'product_detail' product.slug %}">{{product.name}}</a></h5>
+                                                                <p>{{product.description}}</p>
+                                                            </div>
+                                                            <div class="box-inner">
+                                                                <span class="price">
+                                                                <span class="new">${{product.price}}</span>
+                                                                </span>
+                                                                <div class="actions">
+                                                                    <button title="Add To Cart" class="action add-to-cart" data-bs-toggle="modal" data-bs-target="#exampleModal-Cart"><i
+                                                                        class="pe-7s-shopbag"></i></button>
+                                                                    <button class="action wishlist" title="Wishlist" data-bs-toggle="modal" data-bs-target="#exampleModal-Wishlist"><i
+                                                                            class="pe-7s-like"></i></button>
+                                                                    <button class="action quickview" data-link-action="quickview" title="Quick view" data-bs-toggle="modal" data-bs-target="#exampleModal"><i class="pe-7s-look"></i></button>
+                                                                    <button class="action compare" title="Compare" data-bs-toggle="modal" data-bs-target="#exampleModal-Compare"><i
+                                                                            class="pe-7s-refresh-2"></i></button>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Tab Content Area End -->
+                            {% if page_obj.paginator.num_pages > 1 %}
+                            <div class="pro-pagination-style text-center text-lg-end" data-aos="fade-up" data-aos-delay="200">
+                                <div class="pages">
+                                    <ul>
+                                        {% if page_obj.has_previous %}
+                                            <li class="li">
+                                                <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if category_id %}&category={{ category_id }}{% endif %}{% if selected_brand %}&brand={{ selected_brand }}{% endif %}{% if selected_color %}&color={{ selected_color }}{% endif %}{% if sort %}&sort={{ sort }}{% endif %}">
+                                                    <i class="fa fa-angle-left"></i>
+                                                </a>
+                                            </li>
+                                        {% endif %}
+                                        {% for num in page_obj.paginator.page_range %}
+                                            {% if page_obj.number == num %}
+                                                <li class="li active">
+                                                    <a class="page-link" href="?page={{ num }}{% if category_id %}&category={{ category_id }}{% endif %}{% if selected_brand %}&brand={{ selected_brand }}{% endif %}{% if selected_color %}&color={{ selected_color }}{% endif %}{% if sort %}&sort={{ sort }}{% endif %}">{{ num }}</a>
+                                                </li>
+                                            {% else %}
+                                                <li class="li">
+                                                    <a class="page-link" href="?page={{ num }}{% if category_id %}&category={{ category_id }}{% endif %}{% if selected_brand %}&brand={{ selected_brand }}{% endif %}{% if selected_color %}&color={{ selected_color }}{% endif %}{% if sort %}&sort={{ sort }}{% endif %}">{{ num }}</a>
+                                                </li>
+                                            {% endif %}
+                                        {% endfor %}
+                                        {% if page_obj.has_next %}
+                                            <li class="li">
+                                                <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if category_id %}&category={{ category_id }}{% endif %}{% if selected_brand %}&brand={{ selected_brand }}{% endif %}{% if selected_color %}&color={{ selected_color }}{% endif %}{% if sort %}&sort={{ sort }}{% endif %}">
+                                                    <i class="fa fa-angle-right"></i>
+                                                </a>
+                                            </li>
+                                        {% endif %}
+                                    </ul>
+                                </div>
+                            </div>
+                        {% endif %}
+
+
+
+
+
+
+
+                        </div>
+                        <!-- Shop Bottom Area End -->
+                    </div>
+                    <!-- Sidebar Area Start -->
+                    <div class="col-lg-3 order-lg-first col-md-12 order-md-last">
+                        <div class="shop-sidebar-wrap">
+                            <!-- Sidebar single item -->
+                            <div class="sidebar-widget">
+                                <h4 class="sidebar-title">Top Categories</h4>
+                                <div class="sidebar-widget-category">
+                                    <ul>
+                                        <!-- All Products -->
+                                        <li>
+                                            <a href="{% url 'shop' %}?category=&sort={{ sort }}" class="{% if not category_id %}selected{% endif %}">
+                                                All <span>({{ products.count }})</span>
+                                            </a>
+                                        </li>
+                                        
+                                        <!-- Category Filtering Links -->
+                                        {% for category in categories %}
+                                        <li>
+                                            <a href="{% url 'shop' %}?category={{ category.id }}&sort={{ sort }}">
+                                                {{ category.name }} <span>({{ category.product_count }})</span>
+                                            </a>
+                                        </li>
+                                        {% endfor %}
+                                    </ul>
+                                </div>
+                            </div>
+                            
+                            
+                            <!-- Sidebar single item -->
+                            <div class="sidebar-widget">
+                                <h4 class="sidebar-title">Color</h4>
+                                <div class="sidebar-widget-color">
+                                    <ul class="d-flex flex-wrap">
+                                        {% for color in colors %}
+                                            <li>
+                                                <a href="?color={{ color.id }}{% if category_id %}&category={{ category_id }}{% endif %}{% if selected_brand %}&brand={{ selected_brand }}{% endif %}{% if sort %}&sort={{ sort }}{% endif %}"
+                                                   class="color-filter" 
+                                                   style="background-color: {{ color.color_code }}; width: 30px; height: 30px; border-radius: 50%; display: block; border: 1px solid rgb(0,0,0,0.5)">
+                                                </a>
+                                            </li>
+                                        {% endfor %}
+                                    </ul>
+                                    
+                                </div>
+                            </div>
+
+                            <div class="sidebar-widget">
+                            <h4 class="sidebar-title">Brands</h4>
+                            <div class="sidebar-widget-brand">
+                                <ul>
+                                    <li>
+                                        <a href="?{% if selected_brand %}brand={{ selected_brand }}&{% endif %}" class="{% if not selected_brand %}selected{% endif %}">All</a>
+                                    </li>
+                                    {% for brand in brands %}
+                                    <li>
+                                        <a href="?brand={{ brand.name }}{% if sort %}&sort={{ sort }}{% endif %}" class="{% if selected_brand == brand.name %}selected{% endif %}">
+                                            {{ brand.name }}
+                                            <span>({{ brand.products.count }})</span>
+                                        </a>
+                                    </li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                        </div>
+
+                            <!-- Sidebar single item -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Shop Page End  -->
+        <!-- Footer Area Start -->
+        <div class="footer-area">
+            <div class="footer-container">
+                <div class="footer-top">
+                    <div class="container">
+                        <div class="row">
+                            <!-- Start single blog -->
+                            <div class="col-md-6 col-lg-3 mb-md-30px mb-lm-30px">
+                                <div class="single-wedge">
+                                    <div class="footer-logo">
+                                        <a href="index.html"><img src="assets/images/logo/footer-logo.png" alt=""></a>
+                                    </div>
+                                    <p class="about-text">Lorem ipsum dolor sit amet consl adipisi elit, sed do eiusmod templ incididunt ut labore
+                                    </p>
+                                    <ul class="link-follow">
+                                        <li>
+                                            <a class="m-0" title="Twitter" target="_blank" rel="noopener noreferrer" href="#"><i class="fa fa-facebook"
+                                                aria-hidden="true"></i></a>
+                                        </li>
+                                        <li>
+                                            <a title="Tumblr" target="_blank" rel="noopener noreferrer" href="#"><i class="fa fa-tumblr" aria-hidden="true"></i>
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a title="Facebook" target="_blank" rel="noopener noreferrer" href="#"><i class="fa fa-twitter" aria-hidden="true"></i>
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a title="Instagram" target="_blank" rel="noopener noreferrer" href="#"><i class="fa fa-instagram" aria-hidden="true"></i>
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <!-- End single blog -->
+                            <!-- Start single blog -->
+                            <div class="col-md-6 col-lg-3 col-sm-6 mb-lm-30px pl-lg-60px">
+                                <div class="single-wedge">
+                                    <h4 class="footer-herading">Services</h4>
+                                    <div class="footer-links">
+                                        <div class="footer-row">
+                                            <ul class="align-items-center">
+                                                <li class="li"><a class="single-link" href="my-account.html">My Account</a></li>
+                                                <li class="li"><a class="single-link" href="contact.html">Contact</a></li>
+                                                <li class="li"><a class="single-link" href="cart.html">Shopping cart</a></li>
+                                                <li class="li"><a class="single-link" href="shop-left-sidebar.html">Shop</a></li>
+                                                <li class="li"><a class="single-link" href="login.html">Services Login</a></li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- End single blog -->
+                            <!-- Start single blog -->
+                            <div class="col-md-6 col-lg-3 col-sm-6 mb-lm-30px pl-lg-40px">
+                                <div class="single-wedge">
+                                    <h4 class="footer-herading">My Account</h4>
+                                    <div class="footer-links">
+                                        <div class="footer-row">
+                                            <ul class="align-items-center">
+                                                <li class="li"><a class="single-link" href="my-account.html">My Account</a></li>
+                                                <li class="li"><a class="single-link" href="contact.html">Contact</a></li>
+                                                <li class="li"><a class="single-link" href="cart.html">Shopping cart</a></li>
+                                                <li class="li"><a class="single-link" href="shop-left-sidebar.html">Shop</a></li>
+                                                <li class="li"><a class="single-link" href="login.html">Services Login</a></li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- End single blog -->
+                            <!-- Start single blog -->
+                            <div class="col-md-6 col-lg-3 col-sm-12">
+                                <div class="single-wedge">
+                                    <h4 class="footer-herading">Contact Info</h4>
+                                    <div class="footer-links">
+                                        <!-- News letter area -->
+                                        <p class="address">Address: Your Address Goes Here.</p>
+                                        <p class="phone">Phone/Fax:<a href="tel:0123456789"> 0123456789</a></p>
+                                        <p class="mail">Email:<a href="mailto:demo@example.com"> demo@example.com</a></p>
+                                        <p class="mail"><a href="https://demo@example.com/"> demo@example.com</a></p>
+                                        <!-- News letter area  End -->
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- End single blog -->
+                        </div>
+                    </div>
+                </div>
+                <div class="footer-bottom">
+                    <div class="container">
+                        <div class="line-shape-top line-height-1">
+                            <div class="row flex-md-row-reverse align-items-center">
+                                <div class="col-md-6 text-center text-md-end">
+                                    <div class="payment-mth"><a href="#"><img class="img img-fluid" src="assets/images/icons/payment.png" alt="payment-image"></a></div>
+                                </div>
+                                <div class="col-md-6 text-center text-md-start">
+                                    <p class="copy-text"> © 2021 <strong>Hmart</strong> Made With <i class="fa fa-heart"
+                                        aria-hidden="true"></i> By <a class="company-name" href="https://themeforest.net/user/codecarnival/portfolio">
+                                            <strong> Codecarnival </strong></a>.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Footer Area End -->
+    </div>
+    <!-- Modal -->
+    <div class="modal modal-2 fade" id="exampleModal" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"> 
+                        <i class="pe-7s-close"></i>
+                    </button>
+                    <div class="row">
+                        <div class="col-lg-6 col-sm-12 col-xs-12 mb-lm-30px mb-md-30px mb-sm-30px">
+                            <!-- Featured Image -->
+                            <img class="product-image img-responsive m-auto" src="" alt="Product Image">
+                        </div>
+                        <div class="col-lg-6 col-sm-12 col-xs-12" data-aos="fade-up" data-aos-delay="200">
+                            <div class="product-details-content quickview-content">
+                                <h2 class="product-name">Product Name</h2>
+                                <div class="pricing-meta">
+                                    <ul class="d-flex">
+                                        <li class="new-price">$0.00</li>
+                                    </ul>
+                                </div>
+                                <div class="pro-details-rating-wrap">
+                                    <div class="rating-product">
+                                        <!-- Star Ratings will go here -->
+                                    </div>
+                                    <span class="read-review reviews">
+                                        (0 Reviews)
+                                    </span>
+                                </div>
+                                <p class="product-description mt-30px">Product description goes here.</p>
+                                <div class="pro-details-categories-info pro-details-same-style d-flex m-0">
+                                    <span>SKU:</span>
+                                    <ul class="d-flex">
+                                        <li><a href="#" class="product-sku">SKU123</a></li>
+                                    </ul>
+                                </div>
+                                <div class="pro-details-categories-info pro-details-same-style d-flex m-0">
+                                    <span>Categories: </span>
+                                    <ul class="d-flex product-categories">
+                                        <!-- Categories will be dynamically injected here -->
+                                    </ul>
+                                </div>
+                                <div class="pro-details-categories-info pro-details-same-style d-flex m-0">
+                                    <span>Tags: </span>
+                                    <ul class="d-flex product-tags">
+                                        <!-- Tags will be dynamically injected here -->
+                                    </ul>
+                                </div>
+                                <div class="payment-img">
+                                    <a href="#"><img src="assets/images/icons/payment.png" alt=""></a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Modal end -->
+    <!-- Modal Cart -->
+    <div class="modal customize-class fade" id="exampleModal-Cart" tabindex="-1"   aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-body text-center">
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"><i class="pe-7s-close"></i></button>
+                    <div class="tt-modal-messages">
+                        <i class="pe-7s-check"></i> Added to cart successfully!
+                    </div>
+                    <div class="tt-modal-product">
+                        <div class="tt-img">
+                            <img src="assets/images/product-image/1.webp" alt="Modern Smart Phone">
+                        </div>
+                        <h2 class="tt-title"><a href="#">Modern Smart Phone</a></h2>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>     
+    <!-- Modal wishlist -->
+    <div class="modal customize-class fade" id="exampleModal-Wishlist" tabindex="-1"   aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-body text-center">
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"><i class="pe-7s-close"></i></button>
+                    <div class="tt-modal-messages">
+                        <i class="pe-7s-check"></i> Added to Wishlist successfully!
+                    </div>
+                    <div class="tt-modal-product">
+                        <div class="tt-img">
+                            <img src="assets/images/product-image/1.webp" alt="Modern Smart Phone">
+                        </div>
+                        <h2 class="tt-title"><a href="#">Modern Smart Phone</a></h2>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>    
+    <!-- Modal compare -->
+    <div class="modal customize-class fade" id="exampleModal-Compare" tabindex="-1"   aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-body text-center">
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"><i class="pe-7s-close"></i></button>
+                    <div class="tt-modal-messages">
+                        <i class="pe-7s-check"></i> Added to compare successfully!
+                    </div>
+                    <div class="tt-modal-product">
+                        <div class="tt-img">
+                            <img src="assets/images/product-image/1.webp" alt="Modern Smart Phone">
+                        </div>
+                        <h2 class="tt-title"><a href="#">Modern Smart Phone</a></h2>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const quickViewButtons = document.querySelectorAll('.quickview');
+        
+            quickViewButtons.forEach(button => {
+                button.addEventListener('click', function () {
+                    const productId = this.getAttribute('data-id');
+        
+                    // AJAX request to fetch product data
+                    fetch(`/quickview/${productId}/`)
+                        .then(response => response.json())
+                        .then(data => {
+                            // Update the product details in the modal
+                            document.querySelector('.product-name').textContent = data.name;
+                            document.querySelector('.new-price').textContent = '$' + data.price;
+                            document.querySelector('.product-description').textContent = data.description;
+                            document.querySelector('.product-sku').textContent = data.sku;
+        
+                            // Update categories
+                            const categoriesElement = document.querySelector('.product-categories');
+                            categoriesElement.innerHTML = '';  // Clear previous content
+                            data.categories.forEach(category => {
+                                const categoryItem = document.createElement('li');
+                                categoryItem.innerHTML = `<a href="#">${category.name}</a>`;
+                                categoriesElement.appendChild(categoryItem);
+                            });
+        
+                            // Update tags
+                            const tagsElement = document.querySelector('.product-tags');
+                            tagsElement.innerHTML = '';  // Clear previous content
+                            data.tags.forEach(tag => {
+                                const tagItem = document.createElement('li');
+                                tagItem.innerHTML = `<a href="#">${tag.name}</a>`;
+                                tagsElement.appendChild(tagItem);
+                            });
+        
+                            // Update the featured image
+                            document.querySelector('.product-image').src = data.image;
+        
+                            // Update reviews count (no link)
+                            document.querySelector('.reviews').textContent = `(${data.reviews_count} Reviews)`;
+        
+                            // Open the modal
+                            $('#exampleModal').modal('show');
+                        })
+                        .catch(error => console.error('Error fetching product data:', error));
+                });
+            });
+        });
+        
+    </script>
+    
+
+
+{% endblock %}

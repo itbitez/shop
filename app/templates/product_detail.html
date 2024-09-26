@@ -1,0 +1,214 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    {{ product.name }} - {{ site_settings.site_title }}
+{% endblock %}
+
+{% block content %}
+
+<!-- breadcrumb-area start -->
+<div class="breadcrumb-area">
+    <div class="container">
+        <div class="row align-items-center justify-content-center">
+            <div class="col-12 text-center">
+                <h2 class="breadcrumb-title">{{ product.name }}</h2>
+                <ul class="breadcrumb-list">
+                    <li class="breadcrumb-item"><a href="{% url 'index' %}">Home</a></li>
+                    <li class="breadcrumb-item active">{{ product.name }}</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- breadcrumb-area end -->
+
+<!-- Product Details Area Start -->
+<div class="product-details-area pt-100px pb-100px">
+    <div class="container">
+        <div class="row">
+            <!-- Product Slider Images -->
+            <div class="col-lg-6 col-sm-12 col-xs-12 mb-lm-30px mb-md-30px mb-sm-30px">
+                <div class="single-product-sticky mb-30px">
+                    <div class="single-product-slider-wrapper d-flex flex-wrap mb-n-30px">
+                        <div class="single-product-slider-item mb-30px" data-aos="fade-up" data-aos-delay="200">
+                            <a class="venobox" id="featured-image-link" data-gall="myGallery" href="{{ product.image.url }}">
+                                <img id="main-featured-image" src="{{ product.image.url }}" alt="{{ product.name }}" class="img-responsive m-auto">
+                            </a>
+                        </div>
+                        {% for image in product_slider_images %}
+                        <div class="single-product-slider-item mb-30px swiper-slide" data-aos="fade-up" data-aos-delay="200">
+                            <a class="venobox" data-gall="myGallery" href="{{ image.url }}">
+                                <img id="popup_img" src="{{ image.image.url }}" alt="{{ product.name }}" class="img-responsive m-auto" onclick="changeFeaturedImage('{{ image.image.url }}')">
+                            </a>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                <div class="swiper-container mt-20px zoom-thumbs slider-nav-style-1 small-nav">
+                    <div class="swiper-wrapper">
+                        <!-- Add Main Image to Gallery Slider -->
+                        <div class="swiper-slide">
+                            <img src="{{ product.image.url }}" alt="{{ product.name }}" class="img-responsive m-auto" onclick="changeFeaturedImage('{{ product.image.url }}')">
+                        </div>
+                        {% for image in product.gallery_images.all %}
+                        <div class="swiper-slide">
+                            <img src="{{ image.image.url }}" alt="{{ product.name }}" class="img-responsive m-auto" onclick="changeFeaturedImage('{{ image.image.url }}')">
+                        </div>
+                        {% endfor %}
+                    </div>
+                    <!-- Add Arrows -->
+                    <div class="swiper-buttons">
+                        <div class="swiper-button-next"></div>
+                        <div class="swiper-button-prev"></div>
+                    </div>
+                </div>
+            </div>
+            
+
+            <!-- Product Info -->
+            <div class="col-lg-6 col-sm-12 col-xs-12">
+                <div class="product-details-sticky">
+                    <div class="product-details-content quickview-content ml-25px">
+                        <h2>{{ product.name }}</h2>
+
+                        <!-- Product Price -->
+                        <div class="pricing-meta">
+                            <ul class="d-flex">
+                                <li class="new-price">${{ product.price }}</li>
+                            </ul>
+                        </div>
+
+                        <!-- Product Rating and Reviews -->
+                        <div class="pro-details-rating-wrap">
+                            <div class="rating-product">
+                                {% for i in "12345" %}
+                                    {% if forloop.counter <= product.rating %}
+                                        <i class="fa fa-star"></i>
+                                    {% else %}
+                                        <i class="fa fa-star-o"></i>  <!-- Empty star for unfilled ratings -->
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                            <span class="read-review"><a class="reviews" href="#">({{ product.reviews.count }} Customer Reviews)</a></span>
+                        </div>
+
+                        <!-- Short Description -->
+                        <p class="mt-30px">{{ product.short_description }}</p>
+
+                        <!-- SKU -->
+                        <div class="pro-details-categories-info pro-details-same-style d-flex m-0">
+                            <span>SKU:</span>
+                            <ul class="d-flex">
+                                <li>
+                                    {{ product.sku }}
+                                </li>
+                            </ul>
+                        </div>
+
+                        <!-- Categories -->
+                        <div class="pro-details-categories-info pro-details-same-style d-flex m-0">
+                            <span>Categories:</span>
+                            <ul class="d-flex">
+                                {% for category in product.categories.all %}
+        <li>
+            {{ category.name }}{% if not forloop.last %},<span style="width: 5px;"></span> {% endif %}
+        </li>
+        {% endfor %}
+                            </ul>
+                        </div>
+
+                        <!-- Tags -->
+                        <div class="pro-details-categories-info pro-details-same-style d-flex m-0">
+                            <span>Tags:</span>
+                            <ul class="d-flex">
+                                {% for tag in product.tags.all %}
+                                <li>
+                                    {{ tag.name }}{% if not forloop.last %},<span style="width: 5px;"></span> {% endif %}
+                                </li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+
+                        <!-- Add to Cart, Wishlist, Compare -->
+                        <div class="pro-details-quality">
+                            <div class="pro-details-cart">
+                                <a href="{% url 'cart_add' product.id %}"><button class="add-cart">Add To Cart</button></a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Full Description and Reviews -->
+                    <div class="description-review-wrapper">
+                        <div class="description-review-topbar nav">
+                            <a class="active btn text-dark" data-bs-toggle="tab" href="#des-details1">Description</a>
+                            <a class="btn text-dark" data-bs-toggle="tab" href="#des-details3">Reviews ({{ product.reviews.count }})</a>
+                        </div>
+                        <div class="tab-content description-review-bottom">
+                            <!-- Full Description -->
+                            <div id="des-details1" class="tab-pane active">
+                                <div class="product-description-wrapper">
+                                    <p>{{ product.description }}</p>
+                                </div>
+                            </div>
+
+                            <!-- Reviews -->
+                            <div id="des-details3" class="tab-pane">
+                                <div class="row">
+                                    <div class="col-lg-12">
+                                        <div class="review-wrapper">
+                                            {% for review in product.reviews.all %}
+                                            <div class="single-review">
+                                                <div class="review-img">
+                                                    <img src="{{ review.user.profile_image.url }}" alt="{{ review.user.username }}" />
+                                                </div>
+                                                <div class="review-content">
+                                                    <div class="review-top-wrap">
+                                                        <div class="review-left">
+                                                            <div class="review-name">
+                                                                <h4>{{ review.user.username }}</h4>
+                                                            </div>
+                                                            <div class="rating-product">
+                                                                {% for i in "12345" %}
+                                                                    {% if forloop.counter <= review.rating %}
+                                                                        <i class="fa fa-star"></i>
+                                                                    {% else %}
+                                                                        <i class="fa fa-star-o"></i>
+                                                                    {% endif %}
+                                                                {% endfor %}
+                                                            </div>
+                                                        </div>
+                                                        <div class="review-left">
+                                                            <a href="#">Reply</a>
+                                                        </div>
+                                                    </div>
+                                                    <div class="review-bottom">
+                                                        <p>{{ review.comment }}</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- product details description area end -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Product Details Area End -->
+
+<script>
+    function changeFeaturedImage(newImageUrl) {
+        // Update the featured image
+        document.getElementById('main-featured-image').src = newImageUrl;
+        
+        // Update the href for the venobox (popup)
+        document.getElementById('featured-image-link').href = newImageUrl;
+    }
+</script>
+
+{% endblock %}
